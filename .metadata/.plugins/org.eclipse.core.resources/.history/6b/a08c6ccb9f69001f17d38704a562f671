@@ -1,0 +1,70 @@
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
+
+import com.aurionpro.batchprocessing.entity.Student;
+
+import jakarta.persistence.EntityManagerFactory;
+
+@Configuration
+@EnableBatchProcessing
+public class BatchConfig {
+
+    @Autowired
+    private JobBuilderFactory jobBuilderFactory;
+
+    @Autowired
+    private StepBuilderFactory stepBuilderFactory;
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
+
+    @Bean
+    public JpaPagingItemReader<Student> itemReader() {
+        return new JpaPagingItemReaderBuilder<Student>()
+                .name("studentReader")
+                .entityManagerFactory(entityManagerFactory)
+                .queryString("SELECT s FROM Student s")
+                .pageSize(10)
+                .build();
+    }
+
+    @Bean
+    public FlatFileItemWriter<Student> itemWriter() {
+        return new FlatFileItemWriterBuilder<Student>()
+                .name("studentWriter")
+                .resource(new FileSystemResource("students.csv"))
+                .delimited()
+                .delimiter(",")
+                .names("studentId", "name", "marks")
+                .build();
+    }
+
+    @Bean
+    public Step step1() {
+        return stepBuilderFactory.get("step1")
+                .<Student, Student>chunk(10)
+                .reader(itemReader())
+                .writer(itemWriter())
+                .build();
+    }
+
+    @Bean
+    public Job job() {
+        return jobBuilderFactory.get("studentJob")
+                .incrementer(new RunIdIncrementer())
+                .start(step1())
+                .build();
+    }
+}

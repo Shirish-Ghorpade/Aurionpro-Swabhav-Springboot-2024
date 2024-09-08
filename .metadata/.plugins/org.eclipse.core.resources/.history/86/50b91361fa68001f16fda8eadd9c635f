@@ -1,0 +1,2 @@
+spring.application.name=21-batch-processing-app
+spring.batch.job.enabled=false;

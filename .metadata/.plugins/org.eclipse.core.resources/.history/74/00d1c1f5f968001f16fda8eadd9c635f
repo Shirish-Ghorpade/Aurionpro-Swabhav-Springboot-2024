@@ -1,0 +1,55 @@
+package com.aurionpro.batchprocessing.config;
+
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.LineMapper;
+import org.springframework.batch.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+
+import com.aurionpro.batchprocessing.entity.Employee;
+
+import ch.qos.logback.core.model.conditional.ElseModel;
+
+@Configuration
+@EnableBatchProcessing
+public class EmployeeBatchConfig {
+	
+	@Bean
+	public FlatFileItemReader<Employee> readEmployeeCsv() {
+		FlatFileItemReader<Employee> employeeCsvReader = new FlatFileItemReader<>();
+		employeeCsvReader.setResource(new ClassPathResource("data.csv"));
+		employeeCsvReader.setName("employeeCsvReader");
+		employeeCsvReader.setLinesToSkip(1);
+		employeeCsvReader.setLineMapper(lineMapper());
+		return employeeCsvReader;
+	}
+	
+	private LineMapper<Employee> lineMapper(){
+		DefaultLineMapper<Employee> lineMapper  = new DefaultLineMapper<>();
+		DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
+		lineTokenizer.setDelimiter(",");
+		lineTokenizer.setStrict(false);
+	}
+	
+	@Bean
+	public EmployeeProcessor employeeProcessor() {
+		return new EmployeeProcessor();
+	}
+	
+	@Bean
+	public JdbcBatchItemWriter<Employee> jdbcBatchItemWriter(){
+		return new JdbcBatchItemWriter<>().sql("INSERT INTO employees (employee_id, name, salary) VALUES (:employeeId, :name, :salary)");
+		
+	}
+	
+	@Bean
+	public DataSourceTransactionManager dataSourceTransactionManager() {
+		return new DataSourceTransactionManager();
+	}
+	
+}

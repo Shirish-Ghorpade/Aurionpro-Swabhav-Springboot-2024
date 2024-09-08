@@ -1,0 +1,27 @@
+package com.aurionpro.model.dto;
+
+import java.time.LocalDate;
+
+import com.aurionpro.model.entity.TransactionType;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+
+public class ViewTransactionDto {
+	
+	private TransactionType transactionType;
+
+	private double amount;
+
+	private LocalDate date;
+
+	private long senderAccountNumber;
+
+	private long receiverAccountNumber;
+}

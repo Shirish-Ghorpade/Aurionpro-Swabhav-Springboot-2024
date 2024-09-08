@@ -1,0 +1,26 @@
+package com.aurionpro.jwtsecured.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.aurionpro.jwtsecured.entity.Customer;
+import com.aurionpro.jwtsecured.service.CustomerService;
+
+public class CustomerController {
+	@Autowired
+	CustomerService customerService;
+	
+	@GetMapping("/customer/{customerId}")
+	ResponseEntity<Customer> getCustomerById(@PathVariable int custmerId){
+		return ResponseEntity.ok(customerService.getCustomerById(custmerId));
+		
+	}
+	
+	@GetMapping("/customers")
+	ResponseEntity<Customer> getAllCustomers(){
+		return ResponseEntity.ok(customerService.getAllCustomer());
+		
+	}
+}

@@ -1,0 +1,24 @@
+package com.aurionpro.model.dto;
+
+import com.aurionpro.model.entity.BankAccount;
+import com.aurionpro.model.entity.Customer;
+import com.aurionpro.model.entity.DocumentType;
+import com.aurionpro.model.entity.KycStatus;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+public class DocumentResponseDto {
+	    private String documentName;
+
+	    private String documentUrl;
+	    
+	    @Enumerated(EnumType.STRING)
+	    KycStatus kycStatus;
+	    
+	    @Enumerated(EnumType.STRING)
+	    DocumentType documentType;
+}

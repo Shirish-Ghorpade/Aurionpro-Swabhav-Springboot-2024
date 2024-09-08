@@ -1,0 +1,22 @@
+package com.aurionpro.batchprocessing.entity;
+
+import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class Employee {
+	
+	@Column
+	private int employee_id;
+	
+	@Column
+	private String name;
+	
+	@Column
+	private double salary;
+	
+
+}

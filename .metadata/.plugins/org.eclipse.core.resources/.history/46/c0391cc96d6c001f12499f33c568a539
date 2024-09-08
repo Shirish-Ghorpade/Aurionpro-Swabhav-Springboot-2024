@@ -1,0 +1,32 @@
+package com.aurionpro.model.respository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.aurionpro.model.entity.BankAccount;
+import com.aurionpro.model.entity.Transaction;
+
+@Repository
+public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
+
+	
+//	@Query("SELECT t FROM Transaction t WHERE t.senderAccount.accountId = :accountId "
+//			+ "OR (t.receiverAccount IS NOT NULL AND t.receiverAccount.accountId = :accountId) "
+//			+ "OR (t.receiverAccount IS NULL AND t.senderAccount.accountId = :accountId)")
+//	Page<Transaction> findTransferTransactionsByAccountId(@Param("accountId") int accountId, Pageable pageable);
+//	
+	
+	Page<Transaction> findBySenderAccountOrReceiverAccount(BankAccount senderAccount, BankAccount receiverAccount, Pageable pageable);
+	
+	
+	
+	
+
+	@Query("SELECT t FROM Transaction t WHERE t.receiverAccount IS NULL AND t.senderAccount.accountId = :accountId")
+	Page<Transaction> findCreditDebitTransactionByAccountId(@Param("accountId") int accountId, Pageable pageable);
+
+}

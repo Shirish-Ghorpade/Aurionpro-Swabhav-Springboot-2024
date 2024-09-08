@@ -1,0 +1,37 @@
+package com.aurionpro.model.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.aurionpro.model.dto.PageResponse;
+import com.aurionpro.model.dto.TransactionDto;
+import com.aurionpro.model.service.TransactionService;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/bankapp")
+public class CustomerController {
+	@Autowired
+	TransactionService transactionService;
+
+	@PostMapping("/transaction")
+	ResponseEntity<TransactionDto> makeNewTransaction(@Valid @RequestBody TransactionDto transactionDto) {
+		return ResponseEntity.ok(transactionService.makeNewTransaction(transactionDto));
+	}
+
+	@GetMapping("/customer/{customerId}/transactions")
+	ResponseEntity<PageResponse<TransactionDto>> viewTransactionsByCustomerId(@PathVariable int customerId,
+			@RequestParam(defaultValue = "0", required = false) int pageNo,
+			@RequestParam(defaultValue = "3", required = false) int pageSize) {
+		return ResponseEntity.ok(transactionService.getAllTransactionByCustomerId(customerId, pageNo, pageSize));
+	}
+
+}

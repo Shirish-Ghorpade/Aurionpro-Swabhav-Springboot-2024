@@ -1,0 +1,9 @@
+package com.aurionpro.model.service;
+
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+
+public interface DocumentService {
+	ResponseEntity<Map> uploadDocument(DocumentModel documentModel)
+}

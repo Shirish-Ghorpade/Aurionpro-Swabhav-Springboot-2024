@@ -1,0 +1,22 @@
+package com.aurionpro.model.dto;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import com.aurionpro.model.entity.TransactionType;
+
+public class TransactionResponseDto {
+	
+	private TransactionType transactionType;
+	
+	private double amount;
+	
+	private long senderAccountNumber;
+	
+	private long receiverAccountNumber;
+	
+	private LocalDateTime date;
+	
+	
+
+}

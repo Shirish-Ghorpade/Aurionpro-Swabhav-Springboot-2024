@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="447"/>
+		<item key="DIALOG_Y_ORIGIN" value="240"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item key="casesensitive" value="true"/>
+		<item key="wholeword" value="false"/>
+		<item key="isRegEx" value="false"/>
+		<item key="selection" value="Transaction"/>
+		<list key="findhistory">
+			<item value="Employee"/>
+			<item value="customer"/>
+			<item value="Image"/>
+			<item value="image"/>
+			<item value="TransactionDto"/>
+			<item value="Customer"/>
+			<item value="customerService"/>
+			<item value="Respository"/>
+		</list>
+		<list key="replacehistory">
+			<item value="Transaction"/>
+			<item value="document"/>
+			<item value="Document"/>
+			<item value="TransactionResponseDto"/>
+			<item value="tr"/>
+			<item value="Admin"/>
+			<item value="adminService"/>
+			<item value="Repository"/>
+		</list>
+	</section>
+</section>

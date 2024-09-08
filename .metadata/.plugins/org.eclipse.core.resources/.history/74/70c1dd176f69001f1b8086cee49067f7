@@ -1,0 +1,178 @@
+package com.aurionpro.model.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.aurionpro.model.dto.AdminDataDto;
+import com.aurionpro.model.dto.AdminDto;
+import com.aurionpro.model.dto.PageResponse;
+import com.aurionpro.model.dto.RegistrationDto;
+import com.aurionpro.model.entity.Admin;
+import com.aurionpro.model.entity.User;
+import com.aurionpro.model.exceptions.NotFoundException;
+import com.aurionpro.model.respository.AdminRepository;
+import com.aurionpro.model.respository.UserRepository;
+
+public class AdminServiceImpl implements AdminService {
+	
+	@Autowired
+	AdminRepository adminRepository;
+
+	@Autowired
+	UserRepository userRepository;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	AuthService authService;
+
+	@Override
+	public AdminDto addNewAdmin(AdminDataDto adminDataDto) {
+//		Add admin user name and password in user table for login purpose
+		RegistrationDto registrationDto = new RegistrationDto();
+		registrationDto.setUsername(adminDataDto.getUsername());
+		registrationDto.setPassword(adminDataDto.getPassword());
+		registrationDto.setRoleName("ROLE_CUSTOMER");
+
+		User user = authService.register(registrationDto);
+
+//		Add admin in the database
+		Admin admin = toAdminMapper(adminDataDto);
+		admin.setUser(user);
+		return toAdminDtoMapper(adminRepository.save(admin));
+	}
+
+	@Override
+	public AdminDto getAdminById(int adminId) {
+		Optional<Admin> optionalAdmin = adminRepository.findById(adminId);
+		if (!optionalAdmin.isPresent()) {
+			throw new NotFoundException(adminId, "Admin not found with id : ");
+		}
+		return toAdminDtoMapper(optionalAdmin.get());
+	}
+
+	@Override
+	public PageResponse<ViewAdminsDto> getAllAdmins(int pageNo, int pageSize, String sortBy, String sortDir) {
+
+		Sort sort = null;
+		if (sortDir.equalsIgnoreCase("asc")) {
+			sort = Sort.by(sortBy).ascending();
+		} else {
+			sort = Sort.by(sortBy).descending();
+		}
+
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		Page<Admin> dbAdminPage = adminRepository.findAll(pageable);
+
+		PageResponse<ViewAdminsDto> viewAdminDtoPageResponse = new PageResponse<>();
+		viewAdminDtoPageResponse.setTotalElements(pageSize);
+		viewAdminDtoPageResponse.setSize(dbAdminPage.getSize());
+		viewAdminDtoPageResponse.setTotalElements(dbAdminPage.getTotalElements());
+//			Here it is not working so we use logic below
+//			instructorPageResponse.setContent(instructorPage.getContent());
+		viewAdminDtoPageResponse.setLastPage(dbAdminPage.isLast());
+
+//			setContent logic
+		List<ViewAdminsDto> viewAdminDtos = new ArrayList<>();
+
+		dbAdminPage.getContent().forEach(admin -> {
+			ViewAdminsDto viewAdminDto = new ViewAdminsDto();
+			viewAdminDto.setAdminId(admin.getAdminId());
+			viewAdminDto.setFirstName(admin.getFirstName());
+			viewAdminDto.setLastName(admin.getLastName());
+			viewAdminDto.setAccountNumber(admin.getBankAccount() !=null ? admin.getBankAccount().getAccountNumber() : null);
+			viewAdminDto.setBalance(admin.getBankAccount() != null ? admin.getBankAccount().getBalance() : null);
+
+			viewAdminDtos.add(viewAdminDto);
+
+		});
+		viewAdminDtoPageResponse.setContent(viewAdminDtos);
+
+		return viewAdminDtoPageResponse;
+
+	}
+
+	@Override
+	public PageResponse<ViewAdminsDto> getAllAdminsSortedByBalance(int pageNo, int pageSize) {
+		Pageable pageable = PageRequest.of(pageNo, pageSize);
+		Page<ViewAdminsDto> dbAdminPage = adminRepository.getAllAdminsSortedByBalance(pageable);
+
+		PageResponse<ViewAdminsDto> viewAdminDtoPageResponse = new PageResponse<>();
+		viewAdminDtoPageResponse.setTotalElements(pageSize);
+		viewAdminDtoPageResponse.setSize(dbAdminPage.getSize());
+		viewAdminDtoPageResponse.setTotalElements(dbAdminPage.getTotalElements());
+		viewAdminDtoPageResponse.setContent(dbAdminPage.getContent());
+		return viewAdminDtoPageResponse;
+	}
+
+	@Override
+	public PageResponse<ViewAdminsDto> getAllAdminsSortedByDescBalance(int pageNo, int pageSize) {
+		Pageable pageable = PageRequest.of(pageNo, pageSize);
+		Page<ViewAdminsDto> dbAdminPage = adminRepository.getAllAdminsSortedByDescBalance(pageable);
+
+		PageResponse<ViewAdminsDto> viewAdminDtoPageResponse = new PageResponse<>();
+		viewAdminDtoPageResponse.setTotalElements(pageSize);
+		viewAdminDtoPageResponse.setSize(dbAdminPage.getSize());
+		viewAdminDtoPageResponse.setTotalElements(dbAdminPage.getTotalElements());
+		viewAdminDtoPageResponse.setContent(dbAdminPage.getContent());
+		return viewAdminDtoPageResponse;
+	}
+
+	@Override
+	public AdminDto updateAdminById(int adminId, AdminDataDto adminDataDto) {
+		Optional<Admin> optionalAdmin = adminRepository.findById(adminId);
+		if (!optionalAdmin.isPresent()) {
+			throw new NotFoundException(adminId, "Admin not found with id : ");
+		}
+		Admin admin = optionalAdmin.get();
+		admin.setAdminId(adminId);
+		admin.setFirstName(adminDataDto.getFirstName());
+		admin.setLastName(adminDataDto.getLastName());
+		admin.setEmail(adminDataDto.getEmail());
+
+//		change in user table
+		User user = admin.getUser(); 
+		user.setUsername(adminDataDto.getUsername());
+		user.setPassword(passwordEncoder.encode(adminDataDto.getPassword()));
+		userRepository.save(user);
+		return toAdminDtoMapper(adminRepository.save(admin));
+	}
+
+	@Override
+	public String deleteAdminById(int adminId) {
+		Optional<Admin> optionalAdmin = adminRepository.findById(adminId);
+		if (!optionalAdmin.isPresent()) {
+			throw new NotFoundException(adminId, "Admin not found with id : ");
+		}
+		adminRepository.deleteById(adminId);
+		return "Admin Deleted Sucessfully";
+
+	}
+
+	public AdminDto toAdminDtoMapper(Admin admin) {
+		AdminDto adminDto = new AdminDto();
+		adminDto.setAdminId(admin.getAdminId());
+		adminDto.setFirstName(admin.getFirstName());
+		adminDto.setLastName(admin.getLastName());
+		adminDto.setEmail(admin.getEmail());
+		return adminDto;
+	}
+
+	public Admin toAdminMapper(AdminDataDto adminDataDto) {
+		Admin admin = new Admin();
+		admin.setFirstName(adminDataDto.getFirstName());
+		admin.setLastName(adminDataDto.getLastName());
+		admin.setEmail(adminDataDto.getEmail());
+		return admin;
+	}
+
+}

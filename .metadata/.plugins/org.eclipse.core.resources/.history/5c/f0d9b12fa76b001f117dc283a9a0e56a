@@ -1,0 +1,148 @@
+package com.aurionpro.model.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.aurionpro.model.dto.DocumentDto;
+import com.aurionpro.model.dto.DocumentRequestDto;
+import com.aurionpro.model.dto.DocumentResponseDto;
+import com.aurionpro.model.dto.PageResponse;
+import com.aurionpro.model.dto.ViewCustomersDto;
+import com.aurionpro.model.entity.BankAccount;
+import com.aurionpro.model.entity.Customer;
+import com.aurionpro.model.entity.Document;
+import com.aurionpro.model.entity.DocumentType;
+import com.aurionpro.model.entity.KycStatus;
+import com.aurionpro.model.exceptions.NotFoundException;
+import com.aurionpro.model.respository.CustomerRepository;
+import com.aurionpro.model.respository.DocumentRepository;
+
+import ch.qos.logback.classic.Logger;
+
+@Service
+public class DocumentServiceImpl implements DocumentService {
+
+	private static final Logger logger = LoggerFactory.getLogger(DocumentServiceImpl.class);
+
+	@Autowired
+	private CloudinaryService cloudinaryService;
+
+	@Autowired
+	private DocumentRepository documentRepository;
+
+	@Autowired
+	CustomerRepository customerRepository;
+
+	@Override
+	public ResponseEntity<Map> uploadDocument(DocumentDto documentDto) {
+		try {
+			if (documentDto.getName().isEmpty()) {
+				return ResponseEntity.badRequest().build();
+			}
+			if (documentDto.getFile().isEmpty()) {
+				return ResponseEntity.badRequest().build();
+			}
+			int customerId = documentDto.getCustomerId();
+			Customer customer = customerRepository.findById(customerId).orElseThrow(
+					() -> new NotFoundException(customerId, "Customer is not found with the customer Id : "));
+
+			Document document = new Document();
+			document.setDocumentName(documentDto.getName());
+			document.setDocumentUrl(cloudinaryService.uploadFile(documentDto.getFile(), "folder_1"));
+			if (document.getDocumentUrl() == null) {
+				return ResponseEntity.badRequest().build();
+			}
+
+			document.setKycStatus(KycStatus.PENDING);
+			document.setCustomer(customer);
+			document.setDocumentType(DocumentType.PROOF_OF_IDENTITY);
+			documentRepository.save(document);
+			return ResponseEntity.ok().body(Map.of("url", document.getDocumentUrl()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public DocumentResponseDto updateBankDocument(DocumentRequestDto documentRequestDto) {
+
+		int customerId = documentRequestDto.getCustomerId();
+		long documentId = documentRequestDto.getDocumentId();
+		KycStatus statusUpdatedByAdmin = documentRequestDto.getKycStatus();
+
+		Customer customer = customerRepository.findById(customerId)
+				.orElseThrow(() -> new NotFoundException(customerId, "Customer is not found with the customer Id : "));
+
+		List<Document> listOfCustomerDocuments = documentRepository.findByCustomer(customer);
+
+		Document selectedDocument = null;
+		for (Document document : listOfCustomerDocuments) {
+			if (document.getDocumentId() == documentRequestDto.getDocumentId()) {
+				selectedDocument = document;
+			}
+		}
+
+		if (selectedDocument == null) {
+			throw new NotFoundException(documentId, "Document is not found with id : ");
+		}
+
+		selectedDocument.setKycStatus(statusUpdatedByAdmin);
+		documentRepository.save(selectedDocument);
+
+		return toDocumentResponseDto(selectedDocument);
+	}
+
+	private DocumentResponseDto toDocumentResponseDto(Document document) {
+		DocumentResponseDto documentResponseDto = new DocumentResponseDto();
+		documentResponseDto.setDocumentName(document.getDocumentName());
+		documentResponseDto.setDocumentType(document.getDocumentType());
+		documentResponseDto.setDocumentUrl(document.getDocumentUrl());
+		documentResponseDto.setKycStatus(document.getKycStatus());
+		return documentResponseDto;
+	}
+
+	@Override
+	public PageResponse<DocumentResponseDto> getAllDocumentsOfCustomer(int pageNo, int pageSize, String sortBy,
+			String sortDir) {
+		logger.info("Fetching all customers with pagination - Page: {}, Size: {}, SortBy: {}, SortDir: {}", pageNo,
+				pageSize, sortBy, sortDir);
+
+		Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		Page<Customer> dbCustomerPage = customerRepository.findAll(pageable);
+
+		PageResponse<ViewCustomersDto> viewCustomerDtoPageResponse = new PageResponse<>();
+		viewCustomerDtoPageResponse.setTotalElements(pageSize);
+		viewCustomerDtoPageResponse.setSize(dbCustomerPage.getSize());
+		viewCustomerDtoPageResponse.setTotalElements(dbCustomerPage.getTotalElements());
+		viewCustomerDtoPageResponse.setLastPage(dbCustomerPage.isLast());
+
+		List<ViewCustomersDto> viewCustomerDtos = new ArrayList<>();
+		dbCustomerPage.getContent().forEach(customer -> {
+			ViewCustomersDto viewCustomerDto = new ViewCustomersDto();
+			viewCustomerDto.setCustomerId(customer.getCustomerId());
+			viewCustomerDto.setFirstName(customer.getFirstName());
+			viewCustomerDto.setLastName(customer.getLastName());
+			List<BankAccount> bankAccountsOfCustomer = customer.getBankAccounts();
+			if (bankAccountsOfCustomer.size() != 0) {
+				bankAccountsOfCustomer.forEach((bankAccount) -> {
+					viewCustomerDto.setAccountNumber(bankAccount != null ? bankAccount.getAccountNumber() : null);
+					viewCustomerDto.setBalance(bankAccount != null ? bankAccount.getBalance() : null);
+				});
+			}
+			viewCustomerDtos.add(viewCustomerDto);
+	}
+
+	
+}

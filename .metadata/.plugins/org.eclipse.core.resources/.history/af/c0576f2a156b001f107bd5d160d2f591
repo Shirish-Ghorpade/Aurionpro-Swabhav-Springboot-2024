@@ -1,0 +1,10 @@
+package com.aurionpro.model.dto;
+
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+
+@Data
+public class DocumenTDto {
+    private String name;
+    private MultipartFile file;
+}

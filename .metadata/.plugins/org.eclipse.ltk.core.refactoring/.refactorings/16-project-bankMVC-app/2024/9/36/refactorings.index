@@ -1,0 +1,24 @@
+1725167183497	Rename package 'com.aurionpro.mapping'
+1725167215500	Rename package 'com.aurionpro.test'
+1725184489658	Delete element
+1725184496075	Delete element
+1725256161599	Delete element
+1725266398770	Delete element
+1725266417466	Rename type 'UserRespository'
+1725293510458	Delete element
+1725310640193	Delete element
+1725310645564	Delete element
+1725311004843	Rename type 'AdminRespository'
+1725312952560	Delete element
+1725312957170	Delete element
+1725394592558	Rename compilation unit 'EmailController.java'
+1725394633049	Move compilation unit
+1725461082767	Delete element
+1725478541055	Delete element
+1725483598729	Delete element
+1725488869651	Rename compilation unit 'document.java'
+1725490702079	Rename type 'PROOF_OF_IDENTITY'
+1725492323215	Rename compilation unit 'DocumentService.java'
+1725492847755	Rename type 'CloudinaryConfiguration'
+1725565083444	Move compilation unit
+1725636580740	Rename compilation unit 'TransactionBatchConfig.java'

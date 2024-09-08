@@ -1,0 +1,17 @@
+package com.aurionpro.model.exceptions;
+
+import org.springframework.http.HttpStatus;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class NotFoundException extends RuntimeException {
+
+	private static final long serialVersionUID = 1L;
+	private HttpStatus status;
+	private String message;
+}

@@ -1,0 +1,6 @@
+package com.aurionpro.model.service;
+
+public interface CloudinaryService {
+	
+
+}

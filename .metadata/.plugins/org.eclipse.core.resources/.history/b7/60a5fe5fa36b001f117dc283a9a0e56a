@@ -1,0 +1,15 @@
+package com.aurionpro.model.service;
+
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+
+import com.aurionpro.model.dto.DocumentDto;
+import com.aurionpro.model.dto.DocumentRequestDto;
+import com.aurionpro.model.dto.DocumentResponseDto;
+
+public interface DocumentService {
+	ResponseEntity<Map> uploadDocument(DocumentDto documentDto);
+
+	DocumentResponseDto updateBankDocument(DocumentRequestDto documentRequestDto);
+}

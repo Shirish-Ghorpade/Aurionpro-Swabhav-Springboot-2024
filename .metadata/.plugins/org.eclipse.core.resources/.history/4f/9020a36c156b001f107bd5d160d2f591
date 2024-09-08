@@ -1,0 +1,31 @@
+package com.aurionpro.model.controller;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.aurionpro.model.respository.DocumentRepository;
+import com.aurionpro.model.service.DocumentService;
+
+@RestController
+public class DocumentController {
+
+    @Autowired
+    private DocumentRepository documentRepository;
+
+    @Autowired
+    private DocumentService documentService;
+
+    @PostMapping("/upload")
+    public ResponseEntity<Map> upload(DocumentModel documentModel) {
+        try {
+           return documentService.uploadDocument(documentModel);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}

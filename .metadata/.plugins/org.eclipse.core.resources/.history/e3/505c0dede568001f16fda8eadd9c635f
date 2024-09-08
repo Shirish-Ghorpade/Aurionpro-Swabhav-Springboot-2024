@@ -1,0 +1,22 @@
+package com.aurionpro.jwtsecured.entity;
+
+import org.hibernate.internal.build.AllowPrintStacktrace;
+
+import jakarta.persistence.Entity;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@NoArgsConstructor
+@AllowPrintStacktrace
+@Data
+
+@Table(name="customers")
+public class Customer {
+	
+	private String firstName;
+	private String lastName;
+	private long mobileNumber;
+	
+
+}

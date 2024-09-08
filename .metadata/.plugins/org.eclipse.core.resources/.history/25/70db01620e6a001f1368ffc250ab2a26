@@ -1,0 +1,6 @@
+package com.aurionpro.model.dto;
+
+public class ViewTransactionByCustomerIdRequestDto {
+	private int customerId;
+
+}

@@ -1,0 +1,20 @@
+package com.aurionpro.model.exceptions;
+
+public class NotFoundException extends RuntimeException {
+
+	private static final long serialVersionUID = 1L;
+	private long id;
+	private String message;
+	
+
+	public NotFoundException(long id, String message) {
+		super();
+		this.id = id;
+		this.message = message;
+	}
+
+	@Override
+	public String getMessage() {
+		return message + id;
+	}
+}

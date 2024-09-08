@@ -1,0 +1,15 @@
+package com.aurionpro.batchprocessing.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
+public class Employee {
+
+	@Id
+	private Long employeeId;
+	private String name;
+	private double salary;
+
+	// Getters and Setters
+}

@@ -1,0 +1,39 @@
+package com.aurionpro.batchprocessing.controller;
+
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class BatchController {
+
+	@Autowired
+	private JobLauncher jobLauncher;
+
+	@Autowired
+	private JobLauncher jobLauncher;
+
+	@Autowired
+	private Job job;
+
+	@GetMapping("/process")
+	public void process() {
+		try {
+			JobParameters jobParameters = new JobParametersBuilder().addLong("startAt", System.currentTimeMillis())
+					.toJobParameters();
+
+			jobLauncher.run(job, jobParameters);
+		} catch (JobExecutionAlreadyRunningException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JobRestartException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JobInstanceAlreadyCompleteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JobParametersInvalidException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+}

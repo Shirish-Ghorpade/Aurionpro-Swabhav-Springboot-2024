@@ -1,0 +1,62 @@
+package com.aurionpro.batchprocessing.config;
+
+
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.step.tasklet.TaskletStep;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
+
+import javax.persistence.EntityManagerFactory;
+
+@Configuration
+@EnableBatchProcessing
+public class BatchConfig {
+
+    @Bean
+    public Job job(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, ItemReader<Student> itemReader, ItemWriter<Student> itemWriter) {
+        Step step = stepBuilderFactory.get("step")
+                .<Student, Student>chunk(10)
+                .reader(itemReader)
+                .writer(itemWriter)
+                .build();
+
+        return jobBuilderFactory.get("job")
+                .incrementer(new RunIdIncrementer())
+                .start(step)
+                .build();
+    }
+
+    @Bean
+    public JpaPagingItemReader<Student> itemReader(EntityManagerFactory entityManagerFactory) {
+        return new JpaPagingItemReaderBuilder<Student>()
+                .name("studentReader")
+                .entityManagerFactory(entityManagerFactory)
+                .queryString("SELECT s FROM Student s")
+                .pageSize(10)
+                .build();
+    }
+
+    @Bean
+    public FlatFileItemWriter<Student> itemWriter() {
+        return new FlatFileItemWriterBuilder<Student>()
+                .name("studentWriter")
+                .resource(new FileSystemResource("students.csv"))
+                .delimited()
+                .delimiter(",")
+                .names(new String[]{"studentId", "name", "marks"})
+                .build();
+    }
+}

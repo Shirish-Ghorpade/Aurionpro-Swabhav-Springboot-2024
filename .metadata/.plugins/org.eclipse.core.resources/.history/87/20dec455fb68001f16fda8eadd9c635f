@@ -1,0 +1,11 @@
+package com.aurionpro.batchprocessing.controller;
+
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class BatchController {
+	 
+	@Autowired
+	private JobLauncher jobLauncher;
+
+}

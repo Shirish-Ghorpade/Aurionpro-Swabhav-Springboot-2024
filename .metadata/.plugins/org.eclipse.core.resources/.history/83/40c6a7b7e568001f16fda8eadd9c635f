@@ -1,0 +1,5 @@
+package com.aurionpro.jwtsecured.entity;
+
+public class Customer {
+
+}

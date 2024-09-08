@@ -1,0 +1,5 @@
+package com.aurionpro.jwtsecured.service;
+
+public interface CustomerService {
+
+}

@@ -1,0 +1,5 @@
+package com.aurionpro.model.dto;
+
+public class AdminDto {
+
+}

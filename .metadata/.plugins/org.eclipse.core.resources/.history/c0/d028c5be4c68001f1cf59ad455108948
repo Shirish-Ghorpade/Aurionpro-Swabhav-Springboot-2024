@@ -1,0 +1,17 @@
+package com.aurionpro.model.service;
+
+import com.aurionpro.model.dto.AccountCreationRequest;
+import com.aurionpro.model.dto.BankAccountDto;
+
+public interface BankAccountService {
+
+	BankAccountDto addBankAccount(AccountCreationRequest accountCreationRequest);
+
+	BankAccountDto getBankAccountByAccountId(int accountId);
+	
+	BankAccountDto getBankAccountByAccountNumber(long accountNumber);
+
+	BankAccountDto updateBankAccountByAccountId(int accountId, BankAccountDto bankAccountDto);
+
+	String deleteBankAccountByAccountId(int accountId);
+}

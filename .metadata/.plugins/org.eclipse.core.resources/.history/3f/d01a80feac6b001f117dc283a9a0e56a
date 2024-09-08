@@ -1,0 +1,36 @@
+package com.aurionpro.model.controller;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.aurionpro.model.dto.DocumentDto;
+import com.aurionpro.model.respository.DocumentRepository;
+import com.aurionpro.model.service.DocumentService;
+
+@RestController
+@RequestMapping("/bankapp")
+public class DocumentController {
+
+	@Autowired
+	private DocumentRepository documentRepository;
+
+	@Autowired
+	private DocumentService documentService;
+
+	@PreAuthorize("hasRole('CUSTOMER')")
+	@PostMapping("/customer/upload")
+	public ResponseEntity<Map> upload(DocumentDto documentDto) {
+		try {
+			return documentService.uploadDocument(documentDto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+}

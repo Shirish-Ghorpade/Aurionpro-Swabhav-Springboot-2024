@@ -1,0 +1,7 @@
+package com.aurionpro.batchprocessing.config;
+
+import org.springframework.batch.core.JobExecutionListener;
+
+public class JobCompletionNotificationListener implements JobExecutionListener{
+
+}

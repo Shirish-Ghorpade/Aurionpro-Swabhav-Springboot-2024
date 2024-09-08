@@ -1,0 +1,144 @@
+package com.aurionpro.model.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.aurionpro.model.dto.AccountCreationRequest;
+import com.aurionpro.model.dto.BankAccountDto;
+import com.aurionpro.model.dto.CustomerDataDto;
+import com.aurionpro.model.dto.CustomerDto;
+import com.aurionpro.model.dto.PageResponse;
+import com.aurionpro.model.dto.TransactionDto;
+import com.aurionpro.model.dto.ViewCustomersDto;
+import com.aurionpro.model.service.BankAccountService;
+import com.aurionpro.model.service.CustomerService;
+import com.aurionpro.model.service.TransactionService;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/bankapp")
+public class AdminController {
+
+	@Autowired
+	CustomerService customerService;
+
+	@Autowired
+	BankAccountService bankAccountService;
+
+	@Autowired
+	TransactionService transactionService;
+
+////////////////////////////////////////////////////////////////////////////
+//	CRUD ON CUSTOMERS
+
+	@PostMapping("/admin/customer")
+	public ResponseEntity<CustomerDto> addNewCustomer(@Valid @RequestBody CustomerDataDto customerDataDto) {
+		return ResponseEntity.ok(customerService.addNewCustomer(customerDataDto));
+	}
+
+	@GetMapping("/admin/customer/{customerId}")
+	public ResponseEntity<CustomerDto> getCustomerById(@PathVariable int customerId) {
+		return ResponseEntity.ok(customerService.getCustomerById(customerId));
+	}
+
+	@GetMapping("/admin/customers")
+	ResponseEntity<PageResponse<ViewCustomersDto>> viewCustomers(
+			@RequestParam(defaultValue = "0", required = false) int pageNo,
+			@RequestParam(defaultValue = "5", required = false) int pageSize,
+			@RequestParam(defaultValue = "customerId", required = false) String sortBy,
+			@RequestParam(defaultValue = "asc", required = false) String sortDir) {
+		return ResponseEntity.ok(customerService.getAllCustomers(pageNo, pageSize, sortBy, sortDir));
+	}
+	
+	@GetMapping("/admin/customers/sort/balance")
+	ResponseEntity<PageResponse<ViewCustomersDto>> viewCustomersBySortedBalance(
+			@RequestParam(defaultValue = "0", required = false) int pageNo,
+			@RequestParam(defaultValue = "5", required = false) int pageSize) {
+		return ResponseEntity.ok(customerService.getAllCustomersSortedByBalance(pageNo, pageSize));
+	}
+	
+	@GetMapping("admin/customers/desc-sort/balance")
+	ResponseEntity<PageResponse<ViewCustomersDto>> viewCustomersByDescSortedBalance(
+			@RequestParam(defaultValue = "0", required = false) int pageNo,
+			@RequestParam(defaultValue = "5", required = false) int pageSize) {
+		return ResponseEntity.ok(customerService.getAllCustomersSortedByDescBalance(pageNo, pageSize));
+	}
+	
+
+	@PutMapping("/admin/customer/{customerId}")
+	public ResponseEntity<CustomerDto> updateCustomerById(@PathVariable int customerId,
+			@Valid @RequestBody CustomerDataDto customerDataDto) {
+		return ResponseEntity.ok(customerService.updateCustomerById(customerId, customerDataDto));
+	}
+
+	@DeleteMapping("/admin/customer/{customerId}")
+	public ResponseEntity<String> deleteCustomerById(@PathVariable int customerId) {
+		return ResponseEntity.ok(customerService.deleteCustomerById(customerId));
+	}
+
+//////////////////////////////////////////////////////////////////
+//	CRUD ON BANK ACCOUNT
+
+	@PostMapping("admin/account")
+	ResponseEntity<BankAccountDto> addBankAccount(@Valid @RequestBody AccountCreationRequest accountCreationRequest) {
+		return ResponseEntity.ok(bankAccountService.addBankAccount(accountCreationRequest));
+	}
+
+	@GetMapping("/admin/account/{accountId}")
+	ResponseEntity<BankAccountDto> getBankAccountById(@PathVariable int accountId) {
+		return ResponseEntity.ok(bankAccountService.getBankAccountByAccountId(accountId));
+	}
+
+	@GetMapping("/admin/account/number/{accountNumber}")
+	ResponseEntity<BankAccountDto> getBankAccountByAccountNumber(@PathVariable long accountNumber) {
+		return ResponseEntity.ok(bankAccountService.getBankAccountByAccountNumber(accountNumber));
+	}
+
+	@GetMapping("/admin/account/customer/{customerId}")
+	ResponseEntity<BankAccountDto> getBankAccountByCustomerId(@PathVariable int customerId) {
+		return ResponseEntity.ok(bankAccountService.getBankAccountByCustomerId(customerId));
+	}
+
+	@GetMapping("/admin/accounts")
+	ResponseEntity<PageResponse<BankAccountDto>> getAllBankAccounts(
+			@RequestParam(defaultValue = "0", required = false) int pageNo,
+			@RequestParam(defaultValue = "5", required = false) int pageSize,
+			@RequestParam(defaultValue = "accountId", required = false) String sortBy,
+			@RequestParam(defaultValue = "asc", required = false) String sortDir) {
+		return ResponseEntity.ok(bankAccountService.getAllBankAccounts(pageNo, pageSize, sortBy, sortDir));
+	}
+
+	@PutMapping("/admin/account/{accountId}")
+	ResponseEntity<BankAccountDto> updateBankAccountById(@PathVariable int accountId,
+			@Valid @RequestBody BankAccountDto bankAccountDto) {
+		return ResponseEntity.ok(bankAccountService.updateBankAccountByAccountId(accountId, bankAccountDto));
+	}
+
+	@DeleteMapping("/admin/account/{accountId}")
+	ResponseEntity<String> deleteBankAccountById(@PathVariable int accountId) {
+		return ResponseEntity.ok(bankAccountService.deleteBankAccountByAccountId(accountId));
+	}
+
+/////////////////////////////////////////////////////////////////////
+//	CRUD ON TRANSACTIONS
+
+	@GetMapping("/admin/transactions")
+	ResponseEntity<PageResponse<TransactionDto>> viewTransactions(
+			@RequestParam(defaultValue = "0", required = false) int pageNo,
+			@RequestParam(defaultValue = "3", required = false) int pageSize,
+			@RequestParam(defaultValue = "date", required = false) String sortBy,
+			@RequestParam(defaultValue = "asc", required = false) String sortDir) {
+		return ResponseEntity.ok(transactionService.getAllTransactions(pageNo, pageSize, sortBy, sortDir));
+	}
+
+}

@@ -1,0 +1,12 @@
+package com.aurionpro.model.service;
+
+import com.aurionpro.model.dto.PageResponse;
+import com.aurionpro.model.dto.TransactionDto;
+import com.aurionpro.model.dto.TransactionRequestDto;
+import com.aurionpro.model.dto.ViewTransactionDto;
+
+public interface TransactionService {
+	TransactionDto makeNewTransaction(TransactionRequestDto transactionRequestDto);
+
+	PageResponse<ViewTransactionDto> getAllTransactions(int pageNo, int pageSize);
+}

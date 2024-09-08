@@ -1,0 +1,20 @@
+package com.aurionpro.model.service;
+
+import com.aurionpro.model.dto.PageResponse;
+import com.aurionpro.model.dto.TransactionDto;
+import com.aurionpro.model.dto.TransactionResponseDto;
+
+
+public interface TransactionService {
+	
+	TransactionResponseDto credit(TransactionDto transactionDto, int customerId);
+	
+	TransactionResponseDto debit(TransactionDto transactionDto, int customerId);
+	
+	String makeNewTransaction(TransactionDto transactionDto, int customerId);
+
+	PageResponse<TransactionDto> getAllTransactions(int pageNo, int pageSize, String sortBy, String sortDir);
+	
+	PageResponse<TransactionDto> getAllTransactionByCustomerId(int customerId, int pageNo, int pageSize, String sortBy, String sortDir);
+	
+}

@@ -1,0 +1,7 @@
+spring.application.name=21-batch-processing-app
+
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL8Dialect
+
+spring.batch.job.enabled=false
+
+#spring.sql.init.

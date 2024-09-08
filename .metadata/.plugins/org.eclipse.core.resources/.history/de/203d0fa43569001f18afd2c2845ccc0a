@@ -1,0 +1,12 @@
+package com.aurionpro.model.dto;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+
+public class RoleDto {
+
+	private int roleId;
+
+	private String roleName;
+
+}

@@ -1,0 +1,5 @@
+package com.aurionpro.model.respository;
+
+@Repository
+public interface ImageRepository extends JpaRepository<Image, Long> {
+}

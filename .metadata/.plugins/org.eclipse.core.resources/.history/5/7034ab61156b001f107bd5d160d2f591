@@ -1,0 +1,5 @@
+package com.aurionpro.model.controller;
+
+public class DocumentController {
+
+}

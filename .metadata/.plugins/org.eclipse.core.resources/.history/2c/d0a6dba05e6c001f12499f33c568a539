@@ -1,0 +1,5 @@
+package com.aurionpro.batchprocessing.service;
+
+public interface CustomerService {
+
+}

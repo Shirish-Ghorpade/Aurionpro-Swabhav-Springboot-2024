@@ -1,0 +1,11 @@
+package com.aurionpro.model.dto;
+
+
+
+public class RoleDto {
+
+	private int roleId;
+
+	private String roleName;
+
+}

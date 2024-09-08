@@ -1,0 +1,24 @@
+package com.aurionpro.model.service;
+
+import com.aurionpro.model.dto.CustomerDto;
+import com.aurionpro.model.dto.PageResponse;
+import com.aurionpro.model.dto.ViewCustomersDto;
+import com.aurionpro.model.entity.Customer;
+
+public interface CustomerService {
+
+	CustomerDto addNewCustomer(CustomerDataDto customerDto);
+
+	CustomerDto getCustomerById(int id);
+	
+	PageResponse<ViewCustomersDto> getAllCustomers(int pageNo, int pageSize, String sortBy, String sortDir);
+	
+	PageResponse<ViewCustomersDto> getAllCustomersSortedByBalance(int pageNo, int pageSize);
+	
+	PageResponse<ViewCustomersDto> getAllCustomersSortedByDescBalance(int pageNo, int pageSize);
+	
+	CustomerDto updateCustomerById(int id, CustomerDto customerDto);
+
+	String deleteCustomerById(int id);
+
+}

@@ -1,0 +1,5 @@
+package com.aurionpro.model.dto;
+
+public class DocumentRequestDto {
+	private long accountNumber;
+}

@@ -1,0 +1,5 @@
+package com.aurionpro.jwtsecured.controller;
+
+public class CustomerController {
+
+}

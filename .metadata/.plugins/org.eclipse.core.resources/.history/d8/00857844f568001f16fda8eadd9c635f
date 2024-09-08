@@ -1,0 +1,9 @@
+package com.aurionpro.batchprocessing.config;
+
+import org.springframework.batch.item.ItemProcessor;
+
+import com.aurionpro.batchprocessing.entity.Employee;
+
+public class EmployeeProcessor implements ItemProcessor<Employee, Employee>{
+
+}

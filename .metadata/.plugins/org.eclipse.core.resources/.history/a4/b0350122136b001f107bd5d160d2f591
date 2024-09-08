@@ -1,0 +1,6 @@
+package com.aurionpro.model.service;
+
+public class CloudinaryService {
+	CloudinaryServiceImpl implements CloudinaryService {
+
+}

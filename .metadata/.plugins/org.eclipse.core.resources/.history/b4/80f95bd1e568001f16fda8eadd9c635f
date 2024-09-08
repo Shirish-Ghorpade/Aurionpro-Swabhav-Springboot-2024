@@ -1,0 +1,10 @@
+package com.aurionpro.jwtsecured.entity;
+
+public class Customer {
+	
+	private String firstName;
+	private String lastName;
+	private long mobileNumber;
+	
+
+}
